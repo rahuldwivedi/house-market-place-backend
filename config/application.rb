@@ -6,10 +6,13 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module HouseMarketPlaceBackend
+module TestJobHouseMarketplace
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
+    config.hosts << "10b1-2401-4900-1c19-4611-bf87-8d58-4b52-df34.ngrok-free.app"
+    config.api_only = true
     config.load_defaults 7.0
+
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -18,5 +21,20 @@ module HouseMarketPlaceBackend
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.middleware.use Rack::Cors do
+      allow do
+        origins '*'
+        resource '*',
+          headers: :any,
+          expose: ['access-token', 'expiry', 'token-type', 'uid', 'client'],
+          methods: [:get, :post, :options, :delete, :put]
+      end
+    end
+
+    config.session_store :cookie_store, key: '_interslice_session'
+    config.middleware.use config.session_store, config.session_options
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Flash
   end
 end
