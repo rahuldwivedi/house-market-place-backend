@@ -3,7 +3,7 @@ class PropertiesController < ApplicationController
   include ApplicationMethods
 
   def index
-    @properties = @properties.search(params[:search]).filter!(filter_params)
+    @properties = @properties.includes(:address).search(params[:search]).filter!(filter_params)
     @properties = @properties.page(page).per(per_page)
     render_success_response({
       properties: array_serializer.new(@properties.order(created_at: :desc), serializer: PropertySerializer, current_user: current_user )}, '', 200, page_meta(@properties)
